@@ -28,6 +28,7 @@ public class Client
         } catch(IOException e)
         {
             System.out.println("[Client] Error: " + e.getMessage());
+
             System.out.println("[Client] Retrying again in 5 seconds...");
             try
             {
@@ -38,6 +39,5 @@ public class Client
             }
             Client.main(null);
         }
-
     }
 }

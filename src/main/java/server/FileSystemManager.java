@@ -1,5 +1,7 @@
 package server;
 
+import client.ClientConfig;
+
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -22,6 +24,8 @@ public class FileSystemManager
 
     public Map<Integer, String> listFiles()
     {
+        fileMap.clear();
+
         try
         {
             Path directory = Paths.get(rootDirectory);
@@ -56,8 +60,11 @@ public class FileSystemManager
         try
         {
             DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
+
             DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
+
             FileInputStream fileInputStream = new FileInputStream(file);
+
             // Here we send the File to Client
             dataOutputStream.writeLong(file.length());
 
@@ -89,10 +96,41 @@ public class FileSystemManager
         }
     }
 
-
-    public boolean receiveFileFromClient(String fileName)
+    public boolean startReceivingFileFromClient(String fileName)
     {
-        return false;
+        try
+        {
+            int bytes = 0;
+
+            DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
+
+            DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
+
+            FileOutputStream fileOutputStream = new FileOutputStream(rootDirectory + fileName);
+
+
+            long size = dataInputStream.readLong(); // read file size
+
+            byte[] buffer = new byte[4 * 1024];
+
+            while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
+            {
+                // Here we write the file using write method
+                fileOutputStream.write(buffer, 0, bytes);
+
+                size -= bytes; // read upto file size
+            }
+
+            fileOutputStream.close();
+
+            return true;
+
+        } catch(IOException e)
+        {
+            System.out.println("[Client] Error in receiving file from server...\nError: " + e.getMessage());
+
+            return false;
+        }
     }
 
     public boolean deleteFile(int fileIndex)
@@ -109,7 +147,8 @@ public class FileSystemManager
 
                 return true;
             }
-            else {
+            else
+            {
                 return false;
             }
 

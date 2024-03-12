@@ -1,6 +1,7 @@
 package client;
 
 import java.io.*;
+import java.nio.file.*;
 
 public class FileSystemClient
 {
@@ -20,6 +21,7 @@ public class FileSystemClient
         try
         {
             String response = requestHandler.sendRequest("LIST");
+
             System.out.println(response);
         } catch(IOException e)
         {
@@ -33,18 +35,23 @@ public class FileSystemClient
         {
             String response = requestHandler.sendRequest("DOWNLOAD " + fileChoice);
 
-            System.out.println(response);
+            //            System.out.println(response);
 
             String command = response.split(" ", 2)[0]; // START_RECEIVING
 
-            String argument = response.split(" ", 2)[1]; // FILE-NAME
 
             if(command.equals("START_RECEIVING"))
             {
+                String argument = response.split(" ", 2)[1]; // FILE-NAME
+
                 if(receiveFileFromServer(argument))
+                {
                     System.out.println("[Client] File downloaded successfully!");
+                }
                 else
+                {
                     System.out.println("[Client] Error! File not received properly!");
+                }
             }
             else
                 System.out.println("[Client] File not found on server!");
@@ -57,7 +64,7 @@ public class FileSystemClient
 
     public boolean receiveFileFromServer(String fileName)
     {
-        requestHandler.writer.println("STARTSENDING " + fileName);
+        requestHandler.writer.println("START_SENDING " + fileName);
         try
         {
             int bytes = 0;
@@ -77,6 +84,7 @@ public class FileSystemClient
             {
                 // Here we write the file using write method
                 fileOutputStream.write(buffer, 0, bytes);
+
                 size -= bytes; // read upto file size
             }
 
@@ -92,22 +100,69 @@ public class FileSystemClient
         }
     }
 
-    //    public void uploadFile(String localPath)
-    //    {
-    //        try(FileInputStream fileInputStream = new FileInputStream(localPath); OutputStream outputStream = requestHandler.clientSocket.getOutputStream())
-    //        {
-    //            byte[] buffer = new byte[4096];
-    //            int bytesRead;
-    //            while((bytesRead = fileInputStream.read(buffer)) != -1)
-    //            {
-    //                outputStream.write(buffer, 0, bytesRead);
-    //            }
-    //            System.out.println("File uploaded successfully!");
-    //        } catch(IOException e)
-    //        {
-    //            System.out.println("[Client] Error uploading files to server: " + e.getMessage());
-    //        }
-    //    }
+
+    public boolean uploadFile(String localPath)
+    {
+        String[] fileDirectories = localPath.split("/");
+
+        String fileName = fileDirectories[fileDirectories.length - 1];
+
+
+        if(Files.exists(Paths.get(localPath)) && fileName.contains("."))
+        {
+            try
+            {
+                requestHandler.writer.println("UPLOAD " + fileName);
+
+
+                File file = new File(localPath);
+
+                DataOutputStream dataOutputStream = new DataOutputStream(requestHandler.clientSocket.getOutputStream());
+
+                DataInputStream dataInputStream = new DataInputStream(requestHandler.clientSocket.getInputStream());
+
+                FileInputStream fileInputStream = new FileInputStream(file);
+
+                // Here we send the File to Server
+                dataOutputStream.writeLong(file.length());
+
+                int bytes = 0;
+
+                // Here we  break file into chunks
+                byte[] buffer = new byte[4 * 1024];
+
+                while((bytes = fileInputStream.read(buffer)) != -1)
+                {
+                    // Send the file to Server Socket
+                    dataOutputStream.write(buffer, 0, bytes);
+
+                    dataOutputStream.flush();
+                }
+
+                // close the file here
+                fileInputStream.close();
+
+                requestHandler.reader.readLine();
+
+                return true;
+            } catch(FileNotFoundException e)
+            {
+                System.out.println("[Client] File not found!");
+                return false;
+            } catch(IOException io)
+            {
+                System.out.println("[Client] Data input/output stream error...\nError: " + io.getMessage());
+                return false;
+            }
+
+        }
+        else
+        {
+            System.out.println("[Client] Incorrect file path!");
+            return false;
+        }
+
+    }
 
 
     public void deleteFile(int fileChoice)

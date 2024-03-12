@@ -17,7 +17,9 @@ public class UserInterface
     public UserInterface(FileSystemClient fileSystemClient, Socket socket)
     {
         this.socket = socket;
+
         this.fileSystemClient = fileSystemClient;
+
         this.reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
@@ -26,6 +28,7 @@ public class UserInterface
         try
         {
             socket.setSoTimeout(10000);
+
         } catch(SocketException e)
         {
 
@@ -43,7 +46,8 @@ public class UserInterface
         while(socket.isConnected())
         {
             System.out.println("--------------------");
-            System.out.println("Menu:");
+            System.out.println("\t\tMenu");
+            System.out.println("--------------------");
             System.out.println("1. List files");
             System.out.println("2. Download file");
             System.out.println("3. Upload file");
@@ -55,17 +59,19 @@ public class UserInterface
             {
                 int choice = Integer.parseInt(reader.readLine());
 
-                String fileName = "";
+                String filePath = "";
 
                 int fileChoice = 0;
 
                 switch(choice)
                 {
+                    // LIST FILES OF SERVER
                     case 1:
-                        //                        System.out.print("Enter your absolute file path: ");
-                        //                        filePath = reader.readLine();
                         fileSystemClient.listFiles();
+
                         break;
+
+                    // DOWNLOAD FILE FROM SERVER
                     case 2:
                         fileSystemClient.listFiles();
 
@@ -73,20 +79,21 @@ public class UserInterface
 
                         fileChoice = Integer.parseInt(reader.readLine());
 
-                        //                        System.out.print("Enter your file name with extension: ");
-
-                        //                        fileName = reader.readLine();
-
                         fileSystemClient.reqDownloadFile(fileChoice);
+
                         break;
+
+                    // UPLOAD FILE TO SERVER
                     case 3:
-                        System.out.print("Enter your file name with extension: ");
+                        System.out.print("Enter your complete file path: ");
 
-                        fileName = reader.readLine();
+                        filePath = reader.readLine();
 
-                        //                        fileSystemClient.uploadFile(fileName);
+                        fileSystemClient.uploadFile(filePath);
 
                         break;
+
+                    // DELETE FILE FROM SERVER
                     case 4:
                         fileSystemClient.listFiles();
 
@@ -96,20 +103,28 @@ public class UserInterface
 
                         fileSystemClient.deleteFile(fileChoice);
                         break;
+
+                    // EXIT
                     case 0:
                         System.out.println("Exiting client...");
+
                         return;
+
                     default:
                         System.out.println("Invalid choice. Please try again.");
                 }
+
             } catch(IOException e)
             {
                 System.out.println("IOException: " + e.getMessage());
+
                 System.out.println("Server disconnected. Exiting client...");
+
                 break;
             } catch(NumberFormatException numberFormatException)
             {
                 System.out.println("NumberFormatException: " + numberFormatException.getMessage());
+
                 System.out.println("Enter valid range = [0-4]");
 
             }

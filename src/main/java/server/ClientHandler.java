@@ -69,18 +69,27 @@ public class ClientHandler extends Thread
                 case "DOWNLOAD":
                     // Example: DOWNLOAD indexOfFile
                     assert argument != null;
+
                     String response = fileSystemManager.sendFileName(Integer.parseInt(argument));
+
                     return response;
 
-                case "STARTSENDING":
+                case "START_SENDING":
                     assert argument != null;
+
                     boolean success = fileSystemManager.sendFileToClient(argument);
+
                     return success ? "[Server] File downloaded successfully!" : "[Server] File not downloaded!";
 
+
                 case "UPLOAD":
-                    // Example: UPLOAD /path/to/file.txt
-                    boolean uploaded = fileSystemManager.receiveFileFromClient(argument);
-                    return uploaded ? "[Server] File uploaded successfully!" : "[Server] Failed to upload file!";
+                    // Example: START_RECEIVING fileName
+                    assert argument != null;
+
+                    boolean uploaded = fileSystemManager.startReceivingFileFromClient(argument);
+
+                    return uploaded ? "[Server] File uploaded successfully!" : "[Server] File not uploaded!";
+
 
                 case "DELETE":
                     // Example: DELETE indexOfFile
