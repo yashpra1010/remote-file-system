@@ -1,9 +1,6 @@
 package server;
 
 import java.io.*;
-import java.net.Socket;
-import java.nio.*;
-import java.nio.channels.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
@@ -39,40 +36,86 @@ public class FileSystemManager
 
         } catch(IOException e)
         {
-            System.out.println("Error listing files: " + e.getMessage());
+            System.out.println("[Server] Error listing files: " + e.getMessage());
         }
         return fileMap;
     }
 
-    public boolean sendFileToClient(Integer fileChoice)
+    public String sendFileName(Integer fileChoice)
     {
-        Path filePath = Paths.get(rootDirectory, fileMap.get(fileChoice));
-        System.out.println("Download request for: " + filePath);
-        return true;
+        if(fileMap.containsKey(fileChoice))
+            return "START_RECEIVING " + fileMap.get(fileChoice);
+        else
+            return "FILE_NOT_FOUND";
+    }
+
+    public boolean sendFileToClient(String fileName)
+    {
+        File file = new File(rootDirectory + fileName);
+
+        try
+        {
+            DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
+            DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
+            FileInputStream fileInputStream = new FileInputStream(file);
+            // Here we send the File to Client
+            dataOutputStream.writeLong(file.length());
+
+            int bytes = 0;
+
+            // Here we  break file into chunks
+            byte[] buffer = new byte[4 * 1024];
+
+            while((bytes = fileInputStream.read(buffer)) != -1)
+            {
+                // Send the file to Client Socket
+                dataOutputStream.write(buffer, 0, bytes);
+
+                dataOutputStream.flush();
+            }
+
+            // close the file here
+            fileInputStream.close();
+
+            return true;
+        } catch(FileNotFoundException e)
+        {
+            System.out.println("[Server] File not found!");
+            return false;
+        } catch(IOException io)
+        {
+            System.out.println("[Server] Data input/output stream error...\nError: " + io.getMessage());
+            return false;
+        }
     }
 
 
-    public boolean receiveFileFromClient(String filePath)
+    public boolean receiveFileFromClient(String fileName)
     {
-        System.out.println("Upload request for: " + filePath);
-        return true;
+        return false;
     }
 
     public boolean deleteFile(int fileIndex)
     {
         try
         {
-            Path file = Paths.get(rootDirectory, fileMap.get(fileIndex));
+            if(fileMap.containsKey(fileIndex))
+            {
+                Path file = Paths.get(rootDirectory, fileMap.get(fileIndex));
 
-            Files.deleteIfExists(file);
+                Files.deleteIfExists(file);
 
-            fileMap.remove(fileIndex);
+                fileMap.remove(fileIndex);
 
-            return true;
+                return true;
+            }
+            else {
+                return false;
+            }
 
         } catch(IOException e)
         {
-            System.out.println("Error deleting file: " + e.getMessage());
+            System.out.println("[Server] Error deleting file: " + e.getMessage());
 
             return false;
         }

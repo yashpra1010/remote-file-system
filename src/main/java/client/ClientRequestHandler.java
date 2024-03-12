@@ -22,7 +22,7 @@ public class ClientRequestHandler {
         return reader.readLine(); // Receive response from server
     }
 
-    public void close() throws IOException {
+      public void close() throws IOException {
         reader.close(); // Close input stream
         writer.close(); // Close output stream
         clientSocket.close(); // Close socket connection

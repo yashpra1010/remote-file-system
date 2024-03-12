@@ -16,9 +16,10 @@ public class Server
 
         try
         {
+
             serverSocket = new ServerSocket(PORT);
 
-            System.out.println("Server socket open at port: " + PORT);
+            System.out.println("[Server] Server socket open at port: " + PORT);
 
             executorService = Executors.newCachedThreadPool();
 
@@ -33,12 +34,12 @@ public class Server
                 ClientHandler clientHandler = new ClientHandler(clientConnection, fileSystemManager);
 
                 executorService.execute(clientHandler);
-
             }
+
 
         } catch(IOException e)
         {
-            System.out.println("Error while creating Socket! Port Already in use...\n" + e.getMessage());
+            System.out.println("[Server] Error while creating Socket! Port Already in use...\n" + e.getMessage());
         } finally
         {
             try
@@ -47,14 +48,14 @@ public class Server
                 {
                     serverSocket.close(); // Close the server socket
 
-                    System.out.println("Server socket closed!");
+                    System.out.println("[Server] Server socket closed!");
                 }
 
                 executorService.shutdown();
 
             } catch(IOException e)
             {
-                System.out.println("Error while closing server socket: " + e.getMessage());
+                System.out.println("[Server] Error while closing server socket: " + e.getMessage());
             }
 
         }

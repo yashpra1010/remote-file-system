@@ -15,26 +15,26 @@ public class Client
         {
             Socket socket = new Socket(SERVER_IP, PORT);
 
-            System.out.println("Connected to server: " + SERVER_IP + ":" + PORT);
+            System.out.println("[Client] Connected to server: " + SERVER_IP + ":" + PORT);
 
             ClientRequestHandler requestHandler = new ClientRequestHandler(socket);
 
             FileSystemClient fileSystemClient = new FileSystemClient(requestHandler);
 
-            UserInterface userInterface = new UserInterface(fileSystemClient);
+            UserInterface userInterface = new UserInterface(fileSystemClient, socket);
 
             userInterface.start();
 
         } catch(IOException e)
         {
-            System.out.println("Error: " + e.getMessage());
-            System.out.println("Retrying again in 5 seconds...");
+            System.out.println("[Client] Error: " + e.getMessage());
+            System.out.println("[Client] Retrying again in 5 seconds...");
             try
             {
                 Thread.sleep(5000);
             } catch(InterruptedException ex)
             {
-                System.out.println("Error!\nStatus: FATAL\nMessage: "+ex.getMessage());
+                System.out.println("[Client] Error!\nStatus: FATAL\nMessage: "+ex.getMessage());
             }
             Client.main(null);
         }

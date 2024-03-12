@@ -3,6 +3,8 @@ package client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Socket;
+import java.net.SocketException;
 
 public class UserInterface
 {
@@ -10,17 +12,35 @@ public class UserInterface
 
     private final BufferedReader reader;
 
-    public UserInterface(FileSystemClient fileSystemClient)
+    private final Socket socket;
+
+    public UserInterface(FileSystemClient fileSystemClient, Socket socket)
     {
+        this.socket = socket;
         this.fileSystemClient = fileSystemClient;
         this.reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
     public void start()
     {
+        try
+        {
+            socket.setSoTimeout(10000);
+        } catch(SocketException e)
+        {
+
+            System.out.println("[Client] Server timeout!");
+            try
+            {
+                socket.close();
+            } catch(IOException ex)
+            {
+                System.out.println("[Client] Cannot close the socket! Try again...");
+            }
+        }
         System.out.println("Welcome to the File System Client!");
 
-        while(true)
+        while(socket.isConnected())
         {
             System.out.println("--------------------");
             System.out.println("Menu:");
@@ -57,16 +77,14 @@ public class UserInterface
 
                         //                        fileName = reader.readLine();
 
-                        fileSystemClient.downloadFile(fileChoice);
-                        //                        fileSystemClient.downloadFile(fileChoice);
-
+                        fileSystemClient.reqDownloadFile(fileChoice);
                         break;
                     case 3:
                         System.out.print("Enter your file name with extension: ");
 
                         fileName = reader.readLine();
 
-                        fileSystemClient.uploadFile(fileName);
+                        //                        fileSystemClient.uploadFile(fileName);
 
                         break;
                     case 4:
@@ -84,10 +102,18 @@ public class UserInterface
                     default:
                         System.out.println("Invalid choice. Please try again.");
                 }
-            } catch(NumberFormatException | IOException e)
+            } catch(IOException e)
             {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println("IOException: " + e.getMessage());
+                System.out.println("Server disconnected. Exiting client...");
+                break;
+            } catch(NumberFormatException numberFormatException)
+            {
+                System.out.println("NumberFormatException: " + numberFormatException.getMessage());
+                System.out.println("Enter valid range = [0-4]");
+
             }
         }
+
     }
 }
