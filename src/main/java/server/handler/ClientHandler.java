@@ -1,9 +1,7 @@
-package server;
+package server.handler;
 
 import java.io.*;
 import java.util.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 public class ClientHandler extends Thread
 {

@@ -1,26 +1,24 @@
-package client;
+package client.handler;
+
+import client.ClientConfig;
 
 import java.io.*;
 import java.nio.file.*;
 
 public class FileSystemClient
 {
-    private final ClientRequestHandler requestHandler;
+    private final ServerConnection serverConnection;
 
-    private static DataOutputStream dataOutputStream = null;
-
-    private static DataInputStream dataInputStream = null;
-
-    public FileSystemClient(ClientRequestHandler requestHandler)
+    public FileSystemClient(ServerConnection serverConnection)
     {
-        this.requestHandler = requestHandler;
+        this.serverConnection = serverConnection;
     }
 
     public void listFiles()
     {
         try
         {
-            String response = requestHandler.sendRequest("LIST");
+            String response = serverConnection.sendRequest("LIST");
 
             System.out.println(response);
         } catch(IOException e)
@@ -33,7 +31,7 @@ public class FileSystemClient
     {
         try
         {
-            String response = requestHandler.sendRequest("DOWNLOAD " + fileChoice);
+            String response = serverConnection.sendRequest("DOWNLOAD " + fileChoice);
 
             //            System.out.println(response);
 
@@ -47,6 +45,7 @@ public class FileSystemClient
                 if(receiveFileFromServer(argument))
                 {
                     System.out.println("[Client] File downloaded successfully!");
+                    serverConnection.reader.readLine();
                 }
                 else
                 {
@@ -64,21 +63,21 @@ public class FileSystemClient
 
     public boolean receiveFileFromServer(String fileName)
     {
-        requestHandler.writer.println("START_SENDING " + fileName);
+        serverConnection.writer.println("START_SENDING " + fileName);
         try
         {
             int bytes = 0;
 
-            dataInputStream = new DataInputStream(requestHandler.clientSocket.getInputStream());
+            DataInputStream dataInputStream = new DataInputStream(serverConnection.clientSocket.getInputStream());
 
-            dataOutputStream = new DataOutputStream(requestHandler.clientSocket.getOutputStream());
+            //            dataOutputStream = new DataOutputStream(requestHandler.clientSocket.getOutputStream());
 
             FileOutputStream fileOutputStream = new FileOutputStream(ClientConfig.ROOT_DIR_CLIENT + fileName);
 
 
             long size = dataInputStream.readLong(); // read file size
 
-            byte[] buffer = new byte[4 * 1024];
+            byte[] buffer = new byte[8192]; // 8KB
 
             while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
             {
@@ -112,14 +111,14 @@ public class FileSystemClient
         {
             try
             {
-                requestHandler.writer.println("UPLOAD " + fileName);
+                serverConnection.writer.println("UPLOAD " + fileName);
 
 
                 File file = new File(localPath);
 
-                DataOutputStream dataOutputStream = new DataOutputStream(requestHandler.clientSocket.getOutputStream());
+                DataOutputStream dataOutputStream = new DataOutputStream(serverConnection.clientSocket.getOutputStream());
 
-                DataInputStream dataInputStream = new DataInputStream(requestHandler.clientSocket.getInputStream());
+                //                DataInputStream dataInputStream = new DataInputStream(requestHandler.clientSocket.getInputStream());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
 
@@ -128,8 +127,8 @@ public class FileSystemClient
 
                 int bytes = 0;
 
-                // Here we  break file into chunks
-                byte[] buffer = new byte[4 * 1024];
+                // Here we break file into 8KB chunks
+                byte[] buffer = new byte[8192];
 
                 while((bytes = fileInputStream.read(buffer)) != -1)
                 {
@@ -142,7 +141,7 @@ public class FileSystemClient
                 // close the file here
                 fileInputStream.close();
 
-                requestHandler.reader.readLine();
+                serverConnection.reader.readLine();
 
                 return true;
             } catch(FileNotFoundException e)
@@ -169,7 +168,7 @@ public class FileSystemClient
     {
         try
         {
-            String response = requestHandler.sendRequest("DELETE " + fileChoice);
+            String response = serverConnection.sendRequest("DELETE " + fileChoice);
 
             System.out.println(response);
 

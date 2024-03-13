@@ -1,13 +1,17 @@
 package client;
 
+import client.handler.FileSystemClient;
+import client.handler.ServerConnection;
+import client.ui.UserInterface;
+
 import java.io.IOException;
 import java.net.Socket;
 
 public class Client
 {
-    private static final String SERVER_IP = utils.Constants.HOST; // Server IP address
+    private static final String SERVER_IP = ClientConfig.HOST; // Server IP address
 
-    private static final int PORT = utils.Constants.PORT;
+    private static final int PORT = ClientConfig.PORT;
 
     public static void main(String[] args)
     {
@@ -17,7 +21,7 @@ public class Client
 
             System.out.println("[Client] Connected to server: " + SERVER_IP + ":" + PORT);
 
-            ClientRequestHandler requestHandler = new ClientRequestHandler(socket);
+            ServerConnection requestHandler = new ServerConnection(socket);
 
             FileSystemClient fileSystemClient = new FileSystemClient(requestHandler);
 

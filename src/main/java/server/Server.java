@@ -1,12 +1,16 @@
 package server;
 
+import server.handler.ClientConnection;
+import server.handler.ClientHandler;
+import server.handler.FileSystemManager;
+
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
 
 public class Server
 {
-    private static final int PORT = utils.Constants.PORT;
+    private static final int PORT = ServerConfig.PORT;
 
     public static void main(String[] args)
     {

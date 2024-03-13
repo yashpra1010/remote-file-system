@@ -1,4 +1,6 @@
-package client;
+package client.ui;
+
+import client.handler.FileSystemClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +43,7 @@ public class UserInterface
                 System.out.println("[Client] Cannot close the socket! Try again...");
             }
         }
-        System.out.println("Welcome to the File System Client!");
+        System.out.println("Welcome to the Remote File System!");
 
         while(socket.isConnected())
         {
@@ -75,21 +77,35 @@ public class UserInterface
                     case 2:
                         fileSystemClient.listFiles();
 
-                        System.out.print("Enter your choice: ");
+                        System.out.print("Enter your choice (0) to exit: ");
 
                         fileChoice = Integer.parseInt(reader.readLine());
 
-                        fileSystemClient.reqDownloadFile(fileChoice);
+                        if(fileChoice==0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            fileSystemClient.reqDownloadFile(fileChoice);
+                        }
 
                         break;
 
                     // UPLOAD FILE TO SERVER
                     case 3:
-                        System.out.print("Enter your complete file path: ");
+                        System.out.print("Enter your complete file path or (0) to exit: ");
 
                         filePath = reader.readLine();
+                        if(filePath.equals("0"))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            fileSystemClient.uploadFile(filePath);
+                        }
 
-                        fileSystemClient.uploadFile(filePath);
 
                         break;
 
@@ -97,11 +113,17 @@ public class UserInterface
                     case 4:
                         fileSystemClient.listFiles();
 
-                        System.out.print("Enter your choice: ");
+                        System.out.print("Enter your choice (0) to exit: ");
 
                         fileChoice = Integer.parseInt(reader.readLine());
-
-                        fileSystemClient.deleteFile(fileChoice);
+                        if(fileChoice==0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            fileSystemClient.deleteFile(fileChoice);
+                        }
                         break;
 
                     // EXIT

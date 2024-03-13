@@ -1,4 +1,4 @@
-package client;
+package server.handler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,38 +6,38 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientRequestHandler
+public class ClientConnection
 {
     protected final Socket clientSocket;
 
-    protected final BufferedReader reader;
+    private final BufferedReader reader;
 
-    protected final PrintWriter writer;
+    private final PrintWriter writer;
 
-
-    public ClientRequestHandler(Socket clientSocket) throws IOException
+    public ClientConnection(Socket clientSocket) throws IOException
     {
         this.clientSocket = clientSocket;
 
         this.reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         this.writer = new PrintWriter(clientSocket.getOutputStream(), true);
+
     }
 
-    public String sendRequest(String request) throws IOException
+    public String receive() throws IOException
     {
-        writer.println(request); // Send request to server
+        return reader.readLine(); // Receive data from the client
+    }
 
-        return reader.readLine(); // Receive response from server
+    public void send(String data)
+    {
+        writer.println(data); // Send data to the client
     }
 
     public void close() throws IOException
     {
         reader.close(); // Close input stream
-
         writer.close(); // Close output stream
-
         clientSocket.close(); // Close socket connection
     }
-
 }

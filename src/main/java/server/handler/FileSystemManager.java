@@ -1,6 +1,4 @@
-package server;
-
-import client.ClientConfig;
+package server.handler;
 
 import java.io.*;
 import java.nio.file.*;
@@ -61,7 +59,7 @@ public class FileSystemManager
         {
             DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
 
-            DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
+//            DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
 
             FileInputStream fileInputStream = new FileInputStream(file);
 
@@ -70,8 +68,8 @@ public class FileSystemManager
 
             int bytes = 0;
 
-            // Here we  break file into chunks
-            byte[] buffer = new byte[4 * 1024];
+            // Here we  break file into 8KB chunks
+            byte[] buffer = new byte[8192];
 
             while((bytes = fileInputStream.read(buffer)) != -1)
             {
@@ -104,14 +102,14 @@ public class FileSystemManager
 
             DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
 
-            DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
+//            DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
 
             FileOutputStream fileOutputStream = new FileOutputStream(rootDirectory + fileName);
 
 
             long size = dataInputStream.readLong(); // read file size
 
-            byte[] buffer = new byte[4 * 1024];
+            byte[] buffer = new byte[8192]; // 8KB
 
             while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
             {
