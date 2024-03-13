@@ -1,5 +1,8 @@
 package server.handler;
 
+import server.controller.FileSystemController;
+import server.controller.UserController;
+
 import java.io.*;
 import java.util.*;
 
@@ -8,13 +11,17 @@ public class ClientHandler extends Thread
 
     private final ClientConnection clientConnection;
 
-    private final FileSystemManager fileSystemManager;
+    private final FileSystemController fileSystemController;
 
-    public ClientHandler(ClientConnection clientConnection, FileSystemManager fileSystemManager)
+    private final UserController userController;
+
+    public ClientHandler(ClientConnection clientConnection, FileSystemController fileSystemController, UserController userController)
     {
         this.clientConnection = clientConnection;
 
-        this.fileSystemManager = fileSystemManager;
+        this.fileSystemController = fileSystemController;
+
+        this.userController = userController;
     }
 
     @Override
@@ -65,11 +72,23 @@ public class ClientHandler extends Thread
             String command = parts[0]; // ["LIST","DOWNLOAD","START_SENDING","UPLOAD","DELETE"]
 
             String argument = parts.length > 1 ? parts[1] : null; // returns arguments if any
-
+            System.out.println(argument);
             switch(command)
             {
+                case "REGISTER":
+
+                    boolean register = userController.registerUser(argument.split(",",2)[0],argument.split(",",2)[1]);
+
+                    return register ? "true" : "false";
+
+                case "LOGIN":
+
+                    boolean login = userController.loginUser(argument.split(",",2)[0],argument.split(",",2)[1]);
+
+                    return login ? "true" : "false";
+
                 case "LIST":
-                    Map<Integer, String> fileList = fileSystemManager.listFiles();
+                    Map<Integer, String> fileList = fileSystemController.listFiles();
 
                     return fileList.toString();
 
@@ -77,7 +96,7 @@ public class ClientHandler extends Thread
                     // Example: DOWNLOAD indexOfFile
                     assert argument != null;
 
-                    String response = fileSystemManager.sendFileName(Integer.parseInt(argument));
+                    String response = fileSystemController.sendFileName(Integer.parseInt(argument));
 
                     return response;
 
@@ -85,7 +104,7 @@ public class ClientHandler extends Thread
                     // for starting the sending of file when server receives confirmation from "DOWNLOAD"
                     assert argument != null;
 
-                    boolean success = fileSystemManager.sendFileToClient(argument);
+                    boolean success = fileSystemController.sendFileToClient(argument);
 
                     return success ? "[Server] File downloaded successfully!" : "[Server] File not downloaded!";
 
@@ -94,7 +113,7 @@ public class ClientHandler extends Thread
                     // Example: UPLOAD fileName
                     assert argument != null;
 
-                    boolean uploaded = fileSystemManager.startReceivingFileFromClient(argument);
+                    boolean uploaded = fileSystemController.startReceivingFileFromClient(argument);
 
                     return uploaded ? "[Server] File uploaded successfully!" : "[Server] File not uploaded!";
 
@@ -103,7 +122,7 @@ public class ClientHandler extends Thread
                     // Example: DELETE indexOfFile
                     assert argument != null;
 
-                    boolean deleted = fileSystemManager.deleteFile(Integer.parseInt(argument));
+                    boolean deleted = fileSystemController.deleteFile(Integer.parseInt(argument));
 
                     return deleted ? "[Server] File deleted successfully!" : "[Server] Failed to delete file!";
 

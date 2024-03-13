@@ -1,8 +1,8 @@
 package client;
 
-import client.handler.FileSystemClient;
 import client.handler.ServerConnection;
-import client.ui.UserInterface;
+import client.handler.UserHandlerClient;
+import client.ui.UserAuthenticationUI;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -21,13 +21,13 @@ public class Client
 
             System.out.println("[Client] Connected to server: " + SERVER_IP + ":" + PORT);
 
-            ServerConnection requestHandler = new ServerConnection(socket);
+            ServerConnection serverConnection = new ServerConnection(socket);
 
-            FileSystemClient fileSystemClient = new FileSystemClient(requestHandler);
+            UserHandlerClient userHandlerClient = new UserHandlerClient(serverConnection);
 
-            UserInterface userInterface = new UserInterface(fileSystemClient, socket);
+            UserAuthenticationUI userAuthenticationUI = new UserAuthenticationUI(userHandlerClient, socket);
 
-            userInterface.start();
+            userAuthenticationUI.start();
 
         } catch(IOException e)
         {

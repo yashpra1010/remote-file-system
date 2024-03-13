@@ -1,8 +1,9 @@
 package server;
 
+import server.controller.UserController;
 import server.handler.ClientConnection;
 import server.handler.ClientHandler;
-import server.handler.FileSystemManager;
+import server.controller.FileSystemController;
 
 import java.io.*;
 import java.net.*;
@@ -33,9 +34,11 @@ public class Server
 
                 ClientConnection clientConnection = new ClientConnection(clientSocket);
 
-                FileSystemManager fileSystemManager = new FileSystemManager(clientConnection, ServerConfig.ROOT_DIR_SERVER);
+                FileSystemController fileSystemController = new FileSystemController(clientConnection, ServerConfig.ROOT_DIR_SERVER);
 
-                ClientHandler clientHandler = new ClientHandler(clientConnection, fileSystemManager);
+                UserController userController = new UserController(clientConnection);
+
+                ClientHandler clientHandler = new ClientHandler(clientConnection, fileSystemController, userController);
 
                 executorService.execute(clientHandler);
             }

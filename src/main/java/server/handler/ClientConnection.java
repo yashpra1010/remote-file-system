@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class ClientConnection
 {
-    protected final Socket clientSocket;
+    public final Socket clientSocket;
 
     private final BufferedReader reader;
 

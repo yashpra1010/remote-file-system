@@ -6,9 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.SocketException;
 
-public class UserInterface
+public class FileManagerUI
 {
     private final FileSystemClient fileSystemClient;
 
@@ -16,7 +15,7 @@ public class UserInterface
 
     private final Socket socket;
 
-    public UserInterface(FileSystemClient fileSystemClient, Socket socket)
+    public FileManagerUI(FileSystemClient fileSystemClient, Socket socket)
     {
         this.socket = socket;
 
@@ -118,8 +117,6 @@ public class UserInterface
 
                     // EXIT
                     case 0:
-
-                        System.out.println("Exiting client...");
 
                         return;
 

@@ -1,4 +1,6 @@
-package server.handler;
+package server.controller;
+
+import server.handler.ClientConnection;
 
 import java.io.*;
 import java.nio.file.*;
@@ -6,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 
 
-public class FileSystemManager
+public class FileSystemController
 {
     static Map<Integer, String> fileMap = new HashMap<>();
 
@@ -14,7 +16,7 @@ public class FileSystemManager
 
     private final ClientConnection clientConnection;
 
-    public FileSystemManager(ClientConnection clientConnection, String rootDirectory)
+    public FileSystemController(ClientConnection clientConnection, String rootDirectory)
     {
         this.clientConnection = clientConnection;
 
