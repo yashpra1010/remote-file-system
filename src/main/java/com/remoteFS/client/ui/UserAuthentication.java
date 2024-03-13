@@ -1,15 +1,15 @@
-package client.ui;
+package com.remoteFS.client.ui;
 
-import client.handler.FileSystemClient;
-import client.handler.ServerConnection;
-import client.handler.UserHandlerClient;
+import com.remoteFS.client.handler.FileSystemClient;
+import com.remoteFS.client.handler.ServerConnection;
+import com.remoteFS.client.handler.UserHandlerClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class UserAuthenticationUI
+public class UserAuthentication
 {
     private final UserHandlerClient userHandlerClient;
 
@@ -17,7 +17,7 @@ public class UserAuthenticationUI
 
     private final Socket socket;
 
-    public UserAuthenticationUI(UserHandlerClient userHandlerClient, Socket socket)
+    public UserAuthentication(UserHandlerClient userHandlerClient, Socket socket)
     {
         this.socket = socket;
 
@@ -41,10 +41,10 @@ public class UserAuthenticationUI
 
             try
             {
-                int choice = Integer.parseInt(reader.readLine());
+                var choice = Integer.parseInt(reader.readLine());
 
-                String username = "";
-                String password = "";
+                var username = "";
+                var password = "";
 
                 switch(choice)
                 {
@@ -55,30 +55,29 @@ public class UserAuthenticationUI
                         System.out.println("--------------------");
                         System.out.print("Enter username: ");
                         username = reader.readLine();
+
                         System.out.print("Enter password: ");
                         password = reader.readLine();
 
-                        boolean login = userHandlerClient.sendLoginReq(username, password);
-
-                        if(login)
+                        if(userHandlerClient.sendLoginReq(username, password))
                         {
                             System.out.println("[Client] Login Successful");
 
-                            ServerConnection serverConnection = new ServerConnection(socket);
+                            var serverConnection = new ServerConnection(socket);
 
-                            FileSystemClient fileSystemClient = new FileSystemClient(serverConnection);
+                            var fileSystemClient = new FileSystemClient(serverConnection);
 
-                            FileManagerUI fileManagerUI = new FileManagerUI(fileSystemClient, socket);
+                            var fileManagerUI = new FileManager(fileSystemClient, socket);
 
                             fileManagerUI.start();
 
-                            break;
                         }
                         else
                         {
                             System.out.println("[Client] Invalid credentials!");
-                            break;
                         }
+
+                        break;
 
                     // REGISTER
                     case 2:
@@ -90,18 +89,15 @@ public class UserAuthenticationUI
                         System.out.print("Enter password: ");
                         password = reader.readLine();
 
-                        boolean register = userHandlerClient.sendRegisterReq(username, password);
-
-                        if(register)
+                        if(userHandlerClient.sendRegisterReq(username, password))
                         {
                             System.out.println("[Client] Registration successful!");
-                            break;
                         }
                         else
                         {
                             System.out.println("[Client] User Already exists! Registration not successful!");
-                            break;
                         }
+                        break;
 
                     // EXIT
                     case 0:
@@ -112,7 +108,7 @@ public class UserAuthenticationUI
 
                     default:
 
-                        System.out.println("Invalid choice. Please try again.");
+                        System.out.println("Enter valid range = [0-2]");
                 }
 
             } catch(IOException e)
@@ -125,7 +121,6 @@ public class UserAuthenticationUI
 
             } catch(NumberFormatException numberFormatException)
             {
-                System.out.println("NumberFormatException: " + numberFormatException.getMessage());
 
                 System.out.println("Enter valid range = [0-2]");
 

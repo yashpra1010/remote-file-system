@@ -1,21 +1,20 @@
-package server.handler;
+package com.remoteFS.server.handler;
 
-import server.controller.FileSystemController;
-import server.controller.UserController;
+import com.remoteFS.server.controller.FileSystem;
+import com.remoteFS.server.controller.User;
 
 import java.io.*;
-import java.util.*;
 
 public class ClientHandler extends Thread
 {
 
     private final ClientConnection clientConnection;
 
-    private final FileSystemController fileSystemController;
+    private final FileSystem fileSystemController;
 
-    private final UserController userController;
+    private final User userController;
 
-    public ClientHandler(ClientConnection clientConnection, FileSystemController fileSystemController, UserController userController)
+    public ClientHandler(ClientConnection clientConnection, FileSystem fileSystemController, User userController)
     {
         this.clientConnection = clientConnection;
 
@@ -32,14 +31,14 @@ public class ClientHandler extends Thread
             System.out.println("[Server] Client connected: " + clientConnection.clientSocket);
 
             // Handle client requests
-            String request;
+            var request = "";
 
             while((request = clientConnection.receive()) != null)
             {
                 System.out.println("[Server] Received request from client: " + request);
 
                 // Process request and send response back to client
-                String response = processRequest(request);
+                var response = processRequest(request);
 
                 clientConnection.send(response);
 
@@ -67,72 +66,64 @@ public class ClientHandler extends Thread
         try
         {
 
-            String[] parts = request.split(" ", 2);
+            var parts = request.split(" ", 2);
 
-            String command = parts[0]; // ["LIST","DOWNLOAD","START_SENDING","UPLOAD","DELETE"]
+            var command = parts[0]; // ["LIST","DOWNLOAD","START_SENDING","UPLOAD","DELETE"]
 
-            String argument = parts.length > 1 ? parts[1] : null; // returns arguments if any
-            System.out.println(argument);
+            var argument = parts.length > 1 ? parts[1] : null; // returns arguments if any
+
             switch(command)
             {
                 case "REGISTER":
 
-                    boolean register = userController.registerUser(argument.split(",",2)[0],argument.split(",",2)[1]);
+                    var register = userController.registerUser(argument.split(",",2)[0],argument.split(",",2)[1]);
 
                     return register ? "true" : "false";
 
                 case "LOGIN":
 
-                    boolean login = userController.loginUser(argument.split(",",2)[0],argument.split(",",2)[1]);
+                    var login = userController.loginUser(argument.split(",",2)[0],argument.split(",",2)[1]);
 
                     return login ? "true" : "false";
 
                 case "LIST":
-                    Map<Integer, String> fileList = fileSystemController.listFiles();
+                    var fileList = fileSystemController.listFiles();
 
                     return fileList.toString();
 
                 case "DOWNLOAD":
                     // Example: DOWNLOAD indexOfFile
-                    assert argument != null;
 
-                    String response = fileSystemController.sendFileName(Integer.parseInt(argument));
+                    var response = fileSystemController.sendFileName(Integer.parseInt(argument));
 
                     return response;
 
                 case "START_SENDING":
                     // for starting the sending of file when server receives confirmation from "DOWNLOAD"
-                    assert argument != null;
 
-                    boolean success = fileSystemController.sendFileToClient(argument);
+                    var success = fileSystemController.sendFileToClient(argument);
 
                     return success ? "[Server] File downloaded successfully!" : "[Server] File not downloaded!";
 
 
                 case "UPLOAD":
                     // Example: UPLOAD fileName
-                    assert argument != null;
 
-                    boolean uploaded = fileSystemController.startReceivingFileFromClient(argument);
+                    var uploaded = fileSystemController.startReceivingFileFromClient(argument);
 
                     return uploaded ? "[Server] File uploaded successfully!" : "[Server] File not uploaded!";
 
 
                 case "DELETE":
                     // Example: DELETE indexOfFile
-                    assert argument != null;
 
-                    boolean deleted = fileSystemController.deleteFile(Integer.parseInt(argument));
+                    var deleted = fileSystemController.deleteFile(Integer.parseInt(argument));
 
                     return deleted ? "[Server] File deleted successfully!" : "[Server] Failed to delete file!";
 
                 default:
                     return "[Server] Invalid command!";
             }
-        } catch(AssertionError assertionError)
-        {
-            System.out.println("[Server] null value passed in choice!");
-
         } catch(NullPointerException e)
         {
             System.out.println("[Server] Error: Invalid request!");

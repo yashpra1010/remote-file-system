@@ -1,4 +1,4 @@
-package client;
+package com.remoteFS.client;
 
 public class ClientConfig
 {

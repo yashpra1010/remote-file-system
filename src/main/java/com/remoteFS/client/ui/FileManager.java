@@ -1,13 +1,13 @@
-package client.ui;
+package com.remoteFS.client.ui;
 
-import client.handler.FileSystemClient;
+import com.remoteFS.client.handler.FileSystemClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class FileManagerUI
+public class FileManager
 {
     private final FileSystemClient fileSystemClient;
 
@@ -15,7 +15,7 @@ public class FileManagerUI
 
     private final Socket socket;
 
-    public FileManagerUI(FileSystemClient fileSystemClient, Socket socket)
+    public FileManager(FileSystemClient fileSystemClient, Socket socket)
     {
         this.socket = socket;
 
@@ -37,16 +37,16 @@ public class FileManagerUI
             System.out.println("2. Download file");
             System.out.println("3. Upload file");
             System.out.println("4. Delete file");
-            System.out.println("0. Exit");
+            System.out.println("0. Logout");
             System.out.print("Enter your choice: ");
 
             try
             {
-                int choice = Integer.parseInt(reader.readLine());
+                var choice = Integer.parseInt(reader.readLine());
 
-                String filePath = "";
+                var filePath = "";
 
-                int fileChoice = 0;
+                var fileChoice = 0;
 
                 switch(choice)
                 {
@@ -115,14 +115,14 @@ public class FileManagerUI
                         }
                         break;
 
-                    // EXIT
+                    // LOGOUT
                     case 0:
 
                         return;
 
                     default:
 
-                        System.out.println("Invalid choice. Please try again.");
+                        System.out.println("Enter valid range = [0-4]");
                 }
 
             } catch(IOException e)
@@ -135,7 +135,6 @@ public class FileManagerUI
 
             } catch(NumberFormatException numberFormatException)
             {
-                System.out.println("NumberFormatException: " + numberFormatException.getMessage());
 
                 System.out.println("Enter valid range = [0-4]");
 

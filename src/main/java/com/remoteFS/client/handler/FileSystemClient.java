@@ -1,6 +1,7 @@
-package client.handler;
+package com.remoteFS.client.handler;
 
-import client.ClientConfig;
+import com.remoteFS.client.ClientConfig;
+
 import java.io.*;
 import java.nio.file.*;
 
@@ -17,11 +18,15 @@ public class FileSystemClient
     {
         try
         {
-            String response = serverConnection.sendRequest("LIST");
+            var response = serverConnection.sendRequest("LIST");
 
             System.out.println(response);
 
-        } catch(IOException e)
+        } catch(NullPointerException npe)
+        {
+            System.out.println("[Client] Server is down!");
+        }
+        catch(IOException e)
         {
             System.out.println("[Client] Server timeout or Error listing files from server!");
         }
@@ -31,13 +36,13 @@ public class FileSystemClient
     {
         try
         {
-            String response = serverConnection.sendRequest("DOWNLOAD " + fileChoice);
+            var response = serverConnection.sendRequest("DOWNLOAD " + fileChoice);
 
-            String command = response.split(" ", 2)[0]; // "START_RECEIVING" command
+            var command = response.split(" ", 2)[0]; // "START_RECEIVING" command
 
             if(command.equals("START_RECEIVING"))
             {
-                String argument = response.split(" ", 2)[1]; // FILE-NAME
+                var argument = response.split(" ", 2)[1]; // FILE-NAME
 
                 if(receiveFileFromServer(argument))
                 {
@@ -56,7 +61,11 @@ public class FileSystemClient
                 System.out.println("[Client] File not found on server!");
             }
 
-        } catch(IOException e)
+        }catch(NullPointerException npe)
+        {
+            System.out.println("[Client] Server is down!");
+        }
+        catch(IOException e)
         {
             System.out.println("[Client] Error downloading files from server!");
         }
@@ -68,16 +77,16 @@ public class FileSystemClient
         
         try
         {
-            int bytes = 0;
+            var bytes = 0;
 
-            DataInputStream dataInputStream = new DataInputStream(serverConnection.clientSocket.getInputStream());
+            var dataInputStream = new DataInputStream(serverConnection.clientSocket.getInputStream());
 
-            FileOutputStream fileOutputStream = new FileOutputStream(ClientConfig.ROOT_DIR_CLIENT + fileName);
+            var fileOutputStream = new FileOutputStream(ClientConfig.ROOT_DIR_CLIENT + fileName);
 
             // read file size
-            long size = dataInputStream.readLong();
+            var size = dataInputStream.readLong();
 
-            byte[] buffer = new byte[8192]; // 8KB
+            var buffer = new byte[8192]; // 8KB
 
             while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
             {
@@ -91,7 +100,13 @@ public class FileSystemClient
 
             return true;
 
-        } catch(IOException e)
+        } catch(NullPointerException npe)
+        {
+            System.out.println("[Client] Server is down!");
+
+            return false;
+
+        }catch(IOException e)
         {
             System.out.println("[Client] Error in receiving file from server...\nError: " + e.getMessage());
 
@@ -102,9 +117,9 @@ public class FileSystemClient
 
     public boolean uploadFile(String localPath)
     {
-        String[] fileDirectories = localPath.split("/");
+        var fileDirectories = localPath.split("/");
 
-        String fileName = fileDirectories[fileDirectories.length - 1];
+        var fileName = fileDirectories[fileDirectories.length - 1];
 
         if(Files.exists(Paths.get(localPath)) && fileName.contains("."))
         {
@@ -112,19 +127,19 @@ public class FileSystemClient
             {
                 serverConnection.writer.println("UPLOAD " + fileName);
 
-                File file = new File(localPath);
+                var file = new File(localPath);
 
-                DataOutputStream dataOutputStream = new DataOutputStream(serverConnection.clientSocket.getOutputStream());
+                var dataOutputStream = new DataOutputStream(serverConnection.clientSocket.getOutputStream());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
 
                 // Here we send the File to Server
                 dataOutputStream.writeLong(file.length());
 
-                int bytes = 0;
+                var bytes = 0;
 
                 // Here we break file into 8KB chunks
-                byte[] buffer = new byte[8192];
+                var buffer = new byte[8192];
 
                 while((bytes = fileInputStream.read(buffer)) != -1)
                 {
@@ -141,11 +156,18 @@ public class FileSystemClient
 
                 return true;
 
-            } catch(FileNotFoundException e)
+            } catch(NullPointerException npe)
+            {
+                System.out.println("[Client] Server is down!");
+
+                return false;
+
+            }catch(FileNotFoundException e)
             {
                 System.out.println("[Client] File not found!");
 
                 return false;
+
             } catch(IOException io)
             {
                 System.out.println("[Client] Data input/output stream error...\nError: " + io.getMessage());
@@ -168,11 +190,15 @@ public class FileSystemClient
     {
         try
         {
-            String response = serverConnection.sendRequest("DELETE " + fileChoice);
+            var response = serverConnection.sendRequest("DELETE " + fileChoice);
 
             System.out.println(response);
 
-        } catch(IOException e)
+        } catch(NullPointerException npe)
+        {
+            System.out.println("[Client] Server is down!");
+        }
+        catch(IOException e)
         {
             System.out.println("[Client] Error deleting files from server! " + e.getMessage());
         }

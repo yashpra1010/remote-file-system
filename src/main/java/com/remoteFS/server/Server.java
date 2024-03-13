@@ -1,9 +1,9 @@
-package server;
+package com.remoteFS.server;
 
-import server.controller.UserController;
-import server.handler.ClientConnection;
-import server.handler.ClientHandler;
-import server.controller.FileSystemController;
+import com.remoteFS.server.controller.FileSystem;
+import com.remoteFS.server.handler.ClientConnection;
+import com.remoteFS.server.controller.User;
+import com.remoteFS.server.handler.ClientHandler;
 
 import java.io.*;
 import java.net.*;
@@ -30,15 +30,15 @@ public class Server
 
             while(true)
             {
-                Socket clientSocket = serverSocket.accept();
+                var clientSocket = serverSocket.accept();
 
-                ClientConnection clientConnection = new ClientConnection(clientSocket);
+                var clientConnection = new ClientConnection(clientSocket);
 
-                FileSystemController fileSystemController = new FileSystemController(clientConnection, ServerConfig.ROOT_DIR_SERVER);
+                var fileSystemController = new FileSystem(clientConnection, ServerConfig.ROOT_DIR_SERVER);
 
-                UserController userController = new UserController(clientConnection);
+                var userController = new User(clientConnection);
 
-                ClientHandler clientHandler = new ClientHandler(clientConnection, fileSystemController, userController);
+                var clientHandler = new ClientHandler(clientConnection, fileSystemController, userController);
 
                 executorService.execute(clientHandler);
             }

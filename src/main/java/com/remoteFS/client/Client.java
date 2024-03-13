@@ -1,8 +1,8 @@
-package client;
+package com.remoteFS.client;
 
-import client.handler.ServerConnection;
-import client.handler.UserHandlerClient;
-import client.ui.UserAuthenticationUI;
+import com.remoteFS.client.handler.ServerConnection;
+import com.remoteFS.client.handler.UserHandlerClient;
+import com.remoteFS.client.ui.UserAuthentication;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -17,15 +17,15 @@ public class Client
     {
         try
         {
-            Socket socket = new Socket(SERVER_IP, PORT);
+            var socket = new Socket(SERVER_IP, PORT);
 
             System.out.println("[Client] Connected to server: " + SERVER_IP + ":" + PORT);
 
-            ServerConnection serverConnection = new ServerConnection(socket);
+            var serverConnection = new ServerConnection(socket);
 
-            UserHandlerClient userHandlerClient = new UserHandlerClient(serverConnection);
+            var userHandlerClient = new UserHandlerClient(serverConnection);
 
-            UserAuthenticationUI userAuthenticationUI = new UserAuthenticationUI(userHandlerClient, socket);
+            var userAuthenticationUI = new UserAuthentication(userHandlerClient, socket);
 
             userAuthenticationUI.start();
 

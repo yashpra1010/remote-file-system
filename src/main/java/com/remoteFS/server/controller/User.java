@@ -1,16 +1,16 @@
-package server.controller;
+package com.remoteFS.server.controller;
 
-import server.handler.ClientConnection;
+import com.remoteFS.server.handler.ClientConnection;
 
 import java.util.HashMap;
 
-public class UserController
+public class User
 {
     static HashMap<String, String> userCredentials = new HashMap<>();
 
     private final ClientConnection clientConnection;
 
-    public UserController(ClientConnection clientConnection)
+    public User(ClientConnection clientConnection)
     {
         this.clientConnection = clientConnection;
     }

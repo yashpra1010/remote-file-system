@@ -1,4 +1,4 @@
-package client.handler;
+package com.remoteFS.client.handler;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ public class UserHandlerClient
     {
         try
         {
-            String response = serverConnection.sendRequest("LOGIN "+username+","+password);
+            var response = serverConnection.sendRequest("LOGIN "+username+","+password);
 
             if(response.equals("true"))
             {
@@ -26,9 +26,16 @@ public class UserHandlerClient
                 return false;
             }
 
-        } catch(IOException e)
+        } catch(NullPointerException npe)
+        {
+            System.out.println("[Client] Server is down!");
+
+            return false;
+        }
+        catch(IOException e)
         {
             System.out.println("[Client] Server timeout or Error listing files from server!");
+
             return false;
         }
     }
@@ -37,7 +44,7 @@ public class UserHandlerClient
     {
         try
         {
-            String response = serverConnection.sendRequest("REGISTER "+username+","+password);
+            var response = serverConnection.sendRequest("REGISTER "+username+","+password);
 
             if(response.equals("true"))
             {
@@ -48,9 +55,16 @@ public class UserHandlerClient
                 return false;
             }
 
-        } catch(IOException e)
+        } catch(NullPointerException npe)
+        {
+            System.out.println("[Client] Server is down!");
+
+            return false;
+        }
+        catch(IOException e)
         {
             System.out.println("[Client] Server timeout or Error listing files from server!");
+
             return false;
         }
     }
