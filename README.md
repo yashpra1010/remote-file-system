@@ -20,8 +20,8 @@ remote-file-system/
                ├── Client.java                     // Main class to start the client
                ├── ClientConfig.java               // Configuration class for client setup
                ├── ui/
-               │   └── FileManagerUI.java
-               │   └── UserAuthenticationUI.java
+               │   └── FileManager.java
+               │   └── UserAuthentication.java
                └── handler/
                    ├── ServerConnection.java       // Handles client requests and communication
                    └── FileSystemClient.java       // Manages file system requests
