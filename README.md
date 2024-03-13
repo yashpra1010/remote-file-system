@@ -3,9 +3,9 @@ created by: https://github.com/yashpra1010/
 
 ```
 remote-file-system/
-└─ src/
-   └── main/
-       └── java/
+└─ src/main/java/
+   └── com/
+       └── remoteFS/
            ├── server/
            │   ├── Server.java                     // Main class to start the server
            │   ├── ServerConfig.java               // Configuration class for server setup                │   ├── controller/
