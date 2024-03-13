@@ -8,9 +8,10 @@ remote-file-system/
        └── remoteFS/
            ├── server/
            │   ├── Server.java                     // Main class to start the server
-           │   ├── ServerConfig.java               // Configuration class for server setup                │   ├── controller/
-           │   │   └── FileSystemController.java   // Functions for File System Managment
-           │   │   └── UserController.java         // Functions for User Managment
+           │   ├── ServerConfig.java               // Configuration class for server setup
+           │   ├── controller/
+           │   │   └── FileSystem.java             // Functions for File System Managment
+           │   │   └── User.java                   // Functions for User Managment
            │   └── handler/
            │       ├── ClientHandler.java          // Thread/process to handle client requests
            │       └── ClientConnection.java       // Represents a client connection
@@ -24,5 +25,5 @@ remote-file-system/
                └── handler/
                    ├── ServerConnection.java       // Handles client requests and communication
                    └── FileSystemClient.java       // Manages file system requests
-                   └── UserHandlerClient.java       // Manages user level requests
+                   └── UserHandlerClient.java      // Manages user level requests
 ```
