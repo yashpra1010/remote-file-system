@@ -17,6 +17,7 @@ public class FileSystemManager
     public FileSystemManager(ClientConnection clientConnection, String rootDirectory)
     {
         this.clientConnection = clientConnection;
+
         this.rootDirectory = rootDirectory;
     }
 
@@ -28,27 +29,28 @@ public class FileSystemManager
         {
             Path directory = Paths.get(rootDirectory);
 
-            //            System.out.println(directory);
-
             AtomicInteger counter = new AtomicInteger(0);
 
-            Files.list(directory).forEach(path -> {
-                fileMap.put(counter.incrementAndGet(), path.getFileName().toString());
-            });
+            Files.list(directory).forEach(path -> fileMap.put(counter.incrementAndGet(), path.getFileName().toString()));
 
         } catch(IOException e)
         {
             System.out.println("[Server] Error listing files: " + e.getMessage());
         }
+
         return fileMap;
     }
 
     public String sendFileName(Integer fileChoice)
     {
         if(fileMap.containsKey(fileChoice))
+        {
             return "START_RECEIVING " + fileMap.get(fileChoice);
+        }
         else
+        {
             return "FILE_NOT_FOUND";
+        }
     }
 
     public boolean sendFileToClient(String fileName)
@@ -58,8 +60,6 @@ public class FileSystemManager
         try
         {
             DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
-
-//            DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
 
             FileInputStream fileInputStream = new FileInputStream(file);
 
@@ -83,14 +83,19 @@ public class FileSystemManager
             fileInputStream.close();
 
             return true;
+
         } catch(FileNotFoundException e)
         {
             System.out.println("[Server] File not found!");
+
             return false;
+
         } catch(IOException io)
         {
             System.out.println("[Server] Data input/output stream error...\nError: " + io.getMessage());
+
             return false;
+
         }
     }
 
@@ -102,10 +107,7 @@ public class FileSystemManager
 
             DataInputStream dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
 
-//            DataOutputStream dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
-
             FileOutputStream fileOutputStream = new FileOutputStream(rootDirectory + fileName);
-
 
             long size = dataInputStream.readLong(); // read file size
 

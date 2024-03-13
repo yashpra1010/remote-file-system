@@ -13,6 +13,7 @@ public class ClientHandler extends Thread
     public ClientHandler(ClientConnection clientConnection, FileSystemManager fileSystemManager)
     {
         this.clientConnection = clientConnection;
+
         this.fileSystemManager = fileSystemManager;
     }
 
@@ -22,8 +23,10 @@ public class ClientHandler extends Thread
         try
         {
             System.out.println("[Server] Client connected: " + clientConnection.clientSocket);
+
             // Handle client requests
             String request;
+
             while((request = clientConnection.receive()) != null)
             {
                 System.out.println("[Server] Received request from client: " + request);
@@ -32,6 +35,7 @@ public class ClientHandler extends Thread
                 String response = processRequest(request);
 
                 clientConnection.send(response);
+
             }
         } catch(IOException e)
         {
@@ -41,7 +45,9 @@ public class ClientHandler extends Thread
             try
             {
                 clientConnection.close(); // Close client socket
+
                 System.out.println("[Server] Client connection closed: " + clientConnection);
+
             } catch(IOException e)
             {
                 System.out.println("[Server] Error while closing client connection: " + e.getMessage());
@@ -55,13 +61,16 @@ public class ClientHandler extends Thread
         {
 
             String[] parts = request.split(" ", 2);
-            String command = parts[0];
-            String argument = parts.length > 1 ? parts[1] : null;
+
+            String command = parts[0]; // ["LIST","DOWNLOAD","START_SENDING","UPLOAD","DELETE"]
+
+            String argument = parts.length > 1 ? parts[1] : null; // returns arguments if any
 
             switch(command)
             {
                 case "LIST":
                     Map<Integer, String> fileList = fileSystemManager.listFiles();
+
                     return fileList.toString();
 
                 case "DOWNLOAD":
@@ -73,6 +82,7 @@ public class ClientHandler extends Thread
                     return response;
 
                 case "START_SENDING":
+                    // for starting the sending of file when server receives confirmation from "DOWNLOAD"
                     assert argument != null;
 
                     boolean success = fileSystemManager.sendFileToClient(argument);
@@ -81,7 +91,7 @@ public class ClientHandler extends Thread
 
 
                 case "UPLOAD":
-                    // Example: START_RECEIVING fileName
+                    // Example: UPLOAD fileName
                     assert argument != null;
 
                     boolean uploaded = fileSystemManager.startReceivingFileFromClient(argument);
@@ -103,6 +113,7 @@ public class ClientHandler extends Thread
         } catch(AssertionError assertionError)
         {
             System.out.println("[Server] null value passed in choice!");
+
         } catch(NullPointerException e)
         {
             System.out.println("[Server] Error: Invalid request!");

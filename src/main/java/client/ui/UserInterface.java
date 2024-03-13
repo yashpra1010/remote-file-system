@@ -27,22 +27,6 @@ public class UserInterface
 
     public void start()
     {
-        try
-        {
-            socket.setSoTimeout(10000);
-
-        } catch(SocketException e)
-        {
-
-            System.out.println("[Client] Server timeout!");
-            try
-            {
-                socket.close();
-            } catch(IOException ex)
-            {
-                System.out.println("[Client] Cannot close the socket! Try again...");
-            }
-        }
         System.out.println("Welcome to the Remote File System!");
 
         while(socket.isConnected())
@@ -69,12 +53,14 @@ public class UserInterface
                 {
                     // LIST FILES OF SERVER
                     case 1:
+
                         fileSystemClient.listFiles();
 
                         break;
 
                     // DOWNLOAD FILE FROM SERVER
                     case 2:
+
                         fileSystemClient.listFiles();
 
                         System.out.print("Enter your choice (0) to exit: ");
@@ -94,9 +80,11 @@ public class UserInterface
 
                     // UPLOAD FILE TO SERVER
                     case 3:
+
                         System.out.print("Enter your complete file path or (0) to exit: ");
 
                         filePath = reader.readLine();
+
                         if(filePath.equals("0"))
                         {
                             break;
@@ -111,11 +99,13 @@ public class UserInterface
 
                     // DELETE FILE FROM SERVER
                     case 4:
+
                         fileSystemClient.listFiles();
 
                         System.out.print("Enter your choice (0) to exit: ");
 
                         fileChoice = Integer.parseInt(reader.readLine());
+
                         if(fileChoice==0)
                         {
                             break;
@@ -128,11 +118,13 @@ public class UserInterface
 
                     // EXIT
                     case 0:
+
                         System.out.println("Exiting client...");
 
                         return;
 
                     default:
+
                         System.out.println("Invalid choice. Please try again.");
                 }
 
@@ -143,6 +135,7 @@ public class UserInterface
                 System.out.println("Server disconnected. Exiting client...");
 
                 break;
+
             } catch(NumberFormatException numberFormatException)
             {
                 System.out.println("NumberFormatException: " + numberFormatException.getMessage());

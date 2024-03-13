@@ -1,7 +1,6 @@
 package client.handler;
 
 import client.ClientConfig;
-
 import java.io.*;
 import java.nio.file.*;
 
@@ -21,9 +20,10 @@ public class FileSystemClient
             String response = serverConnection.sendRequest("LIST");
 
             System.out.println(response);
+
         } catch(IOException e)
         {
-            System.out.println("[Client] Error listing files from server!");
+            System.out.println("[Client] Server timeout or Error listing files from server!");
         }
     }
 
@@ -33,10 +33,7 @@ public class FileSystemClient
         {
             String response = serverConnection.sendRequest("DOWNLOAD " + fileChoice);
 
-            //            System.out.println(response);
-
-            String command = response.split(" ", 2)[0]; // START_RECEIVING
-
+            String command = response.split(" ", 2)[0]; // "START_RECEIVING" command
 
             if(command.equals("START_RECEIVING"))
             {
@@ -45,7 +42,9 @@ public class FileSystemClient
                 if(receiveFileFromServer(argument))
                 {
                     System.out.println("[Client] File downloaded successfully!");
+                    
                     serverConnection.reader.readLine();
+                
                 }
                 else
                 {
@@ -53,7 +52,9 @@ public class FileSystemClient
                 }
             }
             else
+            {
                 System.out.println("[Client] File not found on server!");
+            }
 
         } catch(IOException e)
         {
@@ -64,18 +65,17 @@ public class FileSystemClient
     public boolean receiveFileFromServer(String fileName)
     {
         serverConnection.writer.println("START_SENDING " + fileName);
+        
         try
         {
             int bytes = 0;
 
             DataInputStream dataInputStream = new DataInputStream(serverConnection.clientSocket.getInputStream());
 
-            //            dataOutputStream = new DataOutputStream(requestHandler.clientSocket.getOutputStream());
-
             FileOutputStream fileOutputStream = new FileOutputStream(ClientConfig.ROOT_DIR_CLIENT + fileName);
 
-
-            long size = dataInputStream.readLong(); // read file size
+            // read file size
+            long size = dataInputStream.readLong();
 
             byte[] buffer = new byte[8192]; // 8KB
 
@@ -106,19 +106,15 @@ public class FileSystemClient
 
         String fileName = fileDirectories[fileDirectories.length - 1];
 
-
         if(Files.exists(Paths.get(localPath)) && fileName.contains("."))
         {
             try
             {
                 serverConnection.writer.println("UPLOAD " + fileName);
 
-
                 File file = new File(localPath);
 
                 DataOutputStream dataOutputStream = new DataOutputStream(serverConnection.clientSocket.getOutputStream());
-
-                //                DataInputStream dataInputStream = new DataInputStream(requestHandler.clientSocket.getInputStream());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
 
@@ -144,13 +140,16 @@ public class FileSystemClient
                 serverConnection.reader.readLine();
 
                 return true;
+
             } catch(FileNotFoundException e)
             {
                 System.out.println("[Client] File not found!");
+
                 return false;
             } catch(IOException io)
             {
                 System.out.println("[Client] Data input/output stream error...\nError: " + io.getMessage());
+
                 return false;
             }
 
@@ -158,6 +157,7 @@ public class FileSystemClient
         else
         {
             System.out.println("[Client] Incorrect file path!");
+
             return false;
         }
 

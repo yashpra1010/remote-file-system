@@ -37,7 +37,9 @@ public class ClientConnection
     public void close() throws IOException
     {
         reader.close(); // Close input stream
+
         writer.close(); // Close output stream
+
         clientSocket.close(); // Close socket connection
     }
 }
