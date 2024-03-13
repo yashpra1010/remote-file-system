@@ -19,25 +19,34 @@ public class FileSystemClient
         try
         {
             var response = serverConnection.sendRequest("LIST");
+            if(response.equals("null"))
+            {
+                throw new IOException();
+            }
+            else if(response.equals("{}"))
+            {
+                System.out.println("[Client] Remote server directory is empty! Please upload files...");
+            }
+            else
+            {
+                System.out.println(response);
+            }
 
-            System.out.println(response);
-
-        } catch(NullPointerException npe)
+        } catch(NullPointerException | IOException e)
         {
             System.out.println("[Client] Server is down!");
         }
-        catch(IOException e)
-        {
-            System.out.println("[Client] Server timeout or Error listing files from server!");
-        }
     }
 
-    public void reqDownloadFile(int fileChoice)
+    public void reqDownloadFile(String fileChoice)
     {
         try
         {
             var response = serverConnection.sendRequest("DOWNLOAD " + fileChoice);
-
+            if(response.equals("null"))
+            {
+                throw new IOException();
+            }
             var command = response.split(" ", 2)[0]; // "START_RECEIVING" command
 
             if(command.equals("START_RECEIVING"))
@@ -47,9 +56,9 @@ public class FileSystemClient
                 if(receiveFileFromServer(argument))
                 {
                     System.out.println("[Client] File downloaded successfully!");
-                    
+
                     serverConnection.reader.readLine();
-                
+
                 }
                 else
                 {
@@ -61,11 +70,10 @@ public class FileSystemClient
                 System.out.println("[Client] File not found on server!");
             }
 
-        }catch(NullPointerException npe)
+        } catch(NullPointerException npe)
         {
             System.out.println("[Client] Server is down!");
-        }
-        catch(IOException e)
+        } catch(IOException e)
         {
             System.out.println("[Client] Error downloading files from server!");
         }
@@ -73,8 +81,8 @@ public class FileSystemClient
 
     public boolean receiveFileFromServer(String fileName)
     {
-        serverConnection.writer.println("START_SENDING " + fileName);
-        
+        serverConnection.writer.println("START_SENDING " + fileName.trim());
+
         try
         {
             var bytes = 0;
@@ -106,7 +114,7 @@ public class FileSystemClient
 
             return false;
 
-        }catch(IOException e)
+        } catch(IOException e)
         {
             System.out.println("[Client] Error in receiving file from server...\nError: " + e.getMessage());
 
@@ -117,7 +125,7 @@ public class FileSystemClient
 
     public boolean uploadFile(String localPath)
     {
-        var fileDirectories = localPath.split("/");
+        var fileDirectories = localPath.trim().split("/");
 
         var fileName = fileDirectories[fileDirectories.length - 1];
 
@@ -162,7 +170,7 @@ public class FileSystemClient
 
                 return false;
 
-            }catch(FileNotFoundException e)
+            } catch(FileNotFoundException e)
             {
                 System.out.println("[Client] File not found!");
 
@@ -186,21 +194,20 @@ public class FileSystemClient
     }
 
 
-    public void deleteFile(int fileChoice)
+    public void deleteFile(String fileChoice)
     {
         try
         {
             var response = serverConnection.sendRequest("DELETE " + fileChoice);
-
+            if(response.equals("null"))
+            {
+                throw new IOException();
+            }
             System.out.println(response);
 
-        } catch(NullPointerException npe)
+        } catch(IOException | NullPointerException e)
         {
             System.out.println("[Client] Server is down!");
-        }
-        catch(IOException e)
-        {
-            System.out.println("[Client] Error deleting files from server! " + e.getMessage());
         }
     }
 }

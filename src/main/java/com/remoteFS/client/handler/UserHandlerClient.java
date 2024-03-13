@@ -15,24 +15,16 @@ public class UserHandlerClient
     {
         try
         {
-            var response = serverConnection.sendRequest("LOGIN "+username+","+password);
+            var response = serverConnection.sendRequest("LOGIN " + username.trim() + "," + password.trim());
 
-            if(response.equals("true"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return response.equals("true");
 
         } catch(NullPointerException npe)
         {
             System.out.println("[Client] Server is down!");
 
             return false;
-        }
-        catch(IOException e)
+        } catch(IOException e)
         {
             System.out.println("[Client] Server timeout or Error listing files from server!");
 
@@ -44,24 +36,16 @@ public class UserHandlerClient
     {
         try
         {
-            var response = serverConnection.sendRequest("REGISTER "+username+","+password);
+            var response = serverConnection.sendRequest("REGISTER " + username.trim() + "," + password.trim());
 
-            if(response.equals("true"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return response.equals("true");
 
         } catch(NullPointerException npe)
         {
             System.out.println("[Client] Server is down!");
 
             return false;
-        }
-        catch(IOException e)
+        } catch(IOException e)
         {
             System.out.println("[Client] Server timeout or Error listing files from server!");
 

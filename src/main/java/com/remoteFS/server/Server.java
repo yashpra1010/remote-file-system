@@ -36,7 +36,7 @@ public class Server
 
                 var fileSystemController = new FileSystem(clientConnection, ServerConfig.ROOT_DIR_SERVER);
 
-                var userController = new User(clientConnection);
+                var userController = new User();
 
                 var clientHandler = new ClientHandler(clientConnection, fileSystemController, userController);
 

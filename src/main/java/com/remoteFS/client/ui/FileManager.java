@@ -42,31 +42,31 @@ public class FileManager
 
             try
             {
-                var choice = Integer.parseInt(reader.readLine());
+                var choice = reader.readLine();
 
                 var filePath = "";
 
-                var fileChoice = 0;
+                var fileChoice = "";
 
                 switch(choice)
                 {
                     // LIST FILES OF SERVER
-                    case 1:
+                    case "1":
 
                         fileSystemClient.listFiles();
 
                         break;
 
                     // DOWNLOAD FILE FROM SERVER
-                    case 2:
+                    case "2":
 
                         fileSystemClient.listFiles();
 
                         System.out.print("Enter your choice (0) to exit: ");
 
-                        fileChoice = Integer.parseInt(reader.readLine());
+                        fileChoice = reader.readLine();
 
-                        if(fileChoice==0)
+                        if(fileChoice.equals("0"))
                         {
                             break;
                         }
@@ -78,7 +78,7 @@ public class FileManager
                         break;
 
                     // UPLOAD FILE TO SERVER
-                    case 3:
+                    case "3":
 
                         System.out.print("Enter your complete file path or (0) to exit: ");
 
@@ -97,15 +97,15 @@ public class FileManager
                         break;
 
                     // DELETE FILE FROM SERVER
-                    case 4:
+                    case "4":
 
                         fileSystemClient.listFiles();
 
                         System.out.print("Enter your choice (0) to exit: ");
 
-                        fileChoice = Integer.parseInt(reader.readLine());
+                        fileChoice = reader.readLine();
 
-                        if(fileChoice==0)
+                        if(fileChoice.equals("0"))
                         {
                             break;
                         }
@@ -116,12 +116,11 @@ public class FileManager
                         break;
 
                     // LOGOUT
-                    case 0:
+                    case "0":
 
                         return;
 
                     default:
-
                         System.out.println("Enter valid range = [0-4]");
                 }
 
@@ -136,7 +135,7 @@ public class FileManager
             } catch(NumberFormatException numberFormatException)
             {
 
-                System.out.println("Enter valid range = [0-4]");
+                System.out.println("Error: "+numberFormatException.getMessage());
 
             }
         }

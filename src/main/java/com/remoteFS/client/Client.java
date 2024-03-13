@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class Client
 {
-    private static final String SERVER_IP = ClientConfig.HOST; // Server IP address
+    private static final String SERVER_IP = ClientConfig.HOST; //  Server IP address
 
     private static final int PORT = ClientConfig.PORT;
 

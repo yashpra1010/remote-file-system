@@ -8,13 +8,6 @@ public class User
 {
     static HashMap<String, String> userCredentials = new HashMap<>();
 
-    private final ClientConnection clientConnection;
-
-    public User(ClientConnection clientConnection)
-    {
-        this.clientConnection = clientConnection;
-    }
-
     public boolean registerUser(String username, String password)
     {
         if(userCredentials.containsKey(username))
@@ -37,14 +30,7 @@ public class User
         }
         if(userCredentials.containsKey(username))
         {
-            if(password.equals(userCredentials.get(username)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return password.equals(userCredentials.get(username));
         }
         else
         {

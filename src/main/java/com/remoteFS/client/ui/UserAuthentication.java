@@ -84,10 +84,34 @@ public class UserAuthentication
                         System.out.println("--------------------");
                         System.out.println("\t\tRegister");
                         System.out.println("--------------------");
-                        System.out.print("Enter username: ");
-                        username = reader.readLine();
-                        System.out.print("Enter password: ");
-                        password = reader.readLine();
+
+                        while(true)
+                        {
+                            System.out.print("Enter username: ");
+                            username = reader.readLine();
+                            if(username.length() >= 6)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                System.out.println("Enter username with more than 6 characters!");
+                            }
+                        }
+
+                        while(true)
+                        {
+                            System.out.print("Enter password: ");
+                            password = reader.readLine();
+                            if(password.length() >= 6)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                System.out.println("Enter password with more than 6 characters!");
+                            }
+                        }
 
                         if(userHandlerClient.sendRegisterReq(username, password))
                         {
